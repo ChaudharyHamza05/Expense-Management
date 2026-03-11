@@ -69,7 +69,7 @@ class AddExpense(LoginRequiredMixin, View):
 
     def post(self, request):
         form = ExpenseForm(request.POST)
-
+# giggkj
         if form.is_valid():
             expense = form.save(commit=False)
             expense.user = request.user
