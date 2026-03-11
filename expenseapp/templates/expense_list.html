@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense List</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        a {
+            text-decoration: none;
+            color: #3498db;
+            margin-right: 15px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Form Styles */
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        form label {
+            font-weight: bold;
+        }
+
+        form select, form input {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        form input:focus, form select:focus {
+            border-color: #3498db;
+        }
+
+        form button {
+            padding: 6px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e1f0ff;
+        }
+
+        button[type="submit"] {
+            background-color: #e74c3c;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #c0392b;
+        }
+
+        /* Add Expense link */
+        a[href$="add_expense"] {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 8px 15px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        a[href$="add_expense"]:hover {
+            background-color: #27ae60;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            form {
+                flex-direction: column;
+            }
+
+            th, td {
+                font-size: 14px;
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<a href="{% url 'logout' %}">Logout</a>
+<h2>Your Expenses</h2>
+
+<form method="GET" action="{% url 'expense_list' %}">
+    <label>Filter by Category:</label>
+    <select name="category">
+        <option value="All" {% if selected_category == "All" %}selected{% endif %}>All</option>
+        <option value="Food" {% if selected_category == "Food" %}selected{% endif %}>Food</option>
+        <option value="Travel" {% if selected_category == "Travel" %}selected{% endif %}>Travel</option>
+        <option value="Bills" {% if selected_category == "Bills" %}selected{% endif %}>Bills</option>
+        <option value="Shopping" {% if selected_category == "Shopping" %}selected{% endif %}>Shopping</option>
+        <option value="Other" {% if selected_category == "Other" %}selected{% endif %}>Other</option>
+    </select>
+    <label>Search:</label>
+    <input type="text" name="search" placeholder="Search..." value="{{ search_text }}">
+    <button type="submit">Filter</button>
+</form>
+<a href="{% url 'add_expense' %}">Add New Expense</a>
+
+<table border="1" cellpadding="10">
+<tr>
+    <th>Date</th>
+    <th>Category</th>
+    <th>Amount</th>
+    <th>Update</th>
+    <th>Delete</th>
+</tr>
+
+{% for expense in expenses %}
+<tr>
+    <td>{{ expense.date }}</td>
+    <td>{{ expense.category }}</td>
+    <td>{{ expense.amount }}</td>
+    <td><a href="{% url 'update_expense' expense.id%}">Update</a></td>
+    <td><form method="POST" action="{% url 'delete_expense' expense.pk %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+        </form></td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5">No expenses found</td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>
